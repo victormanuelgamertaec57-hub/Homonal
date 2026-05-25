@@ -1,0 +1,24 @@
+- generic [ref=e4]:
+  - banner [ref=e45]:
+    - generic [ref=e46]:
+      - generic [ref=e47]: El Método Hormonal
+      - button [ref=e49]:
+        - img [ref=e50]
+  - main [ref=e5]:
+    - generic [ref=e52]:
+      - paragraph [ref=e53]: Únete a nuestra comunidad
+      - heading "Más de 47.000" [level=2] [ref=e54]
+      - heading "mujeres latinas" [level=2] [ref=e55]
+      - paragraph [ref=e56]: ya recuperaron el control de sus hormonas
+      - img "Mujeres latinas felices" [ref=e58]
+      - generic [ref=e60]:
+        - generic [ref=e61]:
+          - paragraph [ref=e62]: 47K+
+          - paragraph [ref=e63]: Usuarias
+        - generic [ref=e64]:
+          - paragraph [ref=e65]: 4.8★
+          - paragraph [ref=e66]: Calificación
+        - generic [ref=e67]:
+          - paragraph [ref=e68]: 28d
+          - paragraph [ref=e69]: Resultados
+      - button "CONTINUAR" [ref=e70]

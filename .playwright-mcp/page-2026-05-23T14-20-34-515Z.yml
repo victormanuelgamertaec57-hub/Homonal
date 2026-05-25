@@ -1,0 +1,24 @@
+- generic [ref=e4]:
+  - banner [ref=e45]:
+    - generic [ref=e46]:
+      - button [ref=e72]:
+        - img [ref=e73]
+      - generic [ref=e47]: El Método Hormonal
+      - button [ref=e49]:
+        - img [ref=e50]
+    - paragraph [ref=e83]: ALIMENTACIÓN
+  - main [ref=e5]:
+    - generic [ref=e85]:
+      - heading "¿Qué antojos te dominan más?" [level=2] [ref=e86]
+      - paragraph [ref=e87]: Puedes elegir varios
+      - button "🍫 Dulces y chocolates" [active] [ref=e88]:
+        - generic [ref=e91]: 🍫 Dulces y chocolates
+      - button "🧂 Snacks salados" [ref=e95]:
+        - generic [ref=e98]: 🧂 Snacks salados
+      - button "🍟 Comida rápida o frita" [ref=e100]:
+        - generic [ref=e103]: 🍟 Comida rápida o frita
+      - button "🥤 Bebidas azucaradas o gaseosas" [ref=e105]:
+        - generic [ref=e108]: 🥤 Bebidas azucaradas o gaseosas
+      - button "✅ Ninguno de estos" [ref=e110]:
+        - generic [ref=e113]: ✅ Ninguno de estos
+      - button "PRÓXIMA ETAPA"

@@ -1,0 +1,21 @@
+- generic [ref=e4]:
+  - banner [ref=e45]:
+    - generic [ref=e46]:
+      - button [ref=e72]:
+        - img [ref=e73]
+      - generic [ref=e47]: El Método Hormonal
+      - button [ref=e49]:
+        - img [ref=e50]
+    - paragraph [ref=e82]: MI PERFIL
+  - main [ref=e5]:
+    - generic [ref=e84]:
+      - heading "¿Cuál es tu objetivo principal?" [level=2] [ref=e85]
+      - paragraph [ref=e86]: Elige el que más te representa
+      - button "🏃 Perder peso hormonal" [ref=e87]:
+        - generic [ref=e89]: 🏃 Perder peso hormonal
+      - button "💪 Tonificar mi cuerpo" [ref=e92]:
+        - generic [ref=e94]: 💪 Tonificar mi cuerpo
+      - button "🌱 Desarrollar hábitos saludables" [ref=e97]:
+        - generic [ref=e99]: 🌱 Desarrollar hábitos saludables
+      - button "✨ Mejorar mi bienestar general" [ref=e102]:
+        - generic [ref=e104]: ✨ Mejorar mi bienestar general

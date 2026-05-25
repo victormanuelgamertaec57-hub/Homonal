@@ -1,0 +1,20 @@
+- generic [ref=e4]:
+  - banner [ref=e45]:
+    - generic [ref=e46]:
+      - button [ref=e72]:
+        - img [ref=e73]
+      - generic [ref=e47]: El Método Hormonal
+      - button [ref=e49]:
+        - img [ref=e50]
+    - paragraph [ref=e164]: CASI LISTO
+  - main [ref=e5]:
+    - generic [ref=e166]:
+      - heading "¿Cuál es tu peso actual?" [level=2] [ref=e167]
+      - paragraph [ref=e168]: Es confidencial y solo lo usamos para tu plan
+      - generic [ref=e169]:
+        - generic [ref=e170]:
+          - spinbutton [active] [ref=e171]
+          - generic [ref=e172]: kg
+        - button "Cambiar a lbs" [ref=e174]
+      - generic [ref=e175]:
+        - button "PRÓXIMA ETAPA"

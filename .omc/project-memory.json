@@ -1,0 +1,254 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1779737482955,
+  "projectRoot": "/Users/victorhoyos/.gemini/antigravity/scratch/metodo-hormonal-quiz",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "tsconfig.json"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "react",
+        "version": "19.2.6",
+        "category": "frontend"
+      },
+      {
+        "name": "react-dom",
+        "version": "19.2.6",
+        "category": "frontend"
+      },
+      {
+        "name": "vite",
+        "version": "8.0.12",
+        "category": "build"
+      }
+    ],
+    "packageManager": "npm",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": "npm run build",
+    "testCommand": null,
+    "lintCommand": "npm run lint",
+    "devCommand": "npm run dev",
+    "scripts": {
+      "dev": "vite",
+      "build": "tsc -b && vite build",
+      "lint": "eslint .",
+      "preview": "vite preview"
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": "type-based"
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "public",
+      "src"
+    ],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "dist": {
+      "path": "dist",
+      "purpose": "Distribution/build output",
+      "fileCount": 12,
+      "lastAccessed": 1779737482923,
+      "keyFiles": [
+        "Mujer derecha.png",
+        "Mujer izquierda.png",
+        "edad-18-29.png",
+        "edad-30-39.png",
+        "edad-40-49.png"
+      ]
+    },
+    "public": {
+      "path": "public",
+      "purpose": "Public files",
+      "fileCount": 11,
+      "lastAccessed": 1779737482924,
+      "keyFiles": [
+        "Mujer derecha.png",
+        "Mujer izquierda.png",
+        "edad-18-29.png",
+        "edad-30-39.png",
+        "edad-40-49.png"
+      ]
+    },
+    "src": {
+      "path": "src",
+      "purpose": "Source code",
+      "fileCount": 4,
+      "lastAccessed": 1779737482941,
+      "keyFiles": [
+        "App.css",
+        "App.tsx",
+        "index.css",
+        "main.tsx"
+      ]
+    },
+    "dist/assets": {
+      "path": "dist/assets",
+      "purpose": "Static assets",
+      "fileCount": 2,
+      "lastAccessed": 1779737482945,
+      "keyFiles": [
+        "index-D9ZbbKLU.css",
+        "index-GUD8eq0u.js"
+      ]
+    },
+    "src/assets": {
+      "path": "src/assets",
+      "purpose": "Static assets",
+      "fileCount": 3,
+      "lastAccessed": 1779737482949,
+      "keyFiles": [
+        "hero.png",
+        "react.svg",
+        "vite.svg"
+      ]
+    },
+    "src/components": {
+      "path": "src/components",
+      "purpose": "UI components",
+      "fileCount": 15,
+      "lastAccessed": 1779737482950,
+      "keyFiles": [
+        "AgeCards.tsx",
+        "AvatarSVG.tsx",
+        "CountdownTimer.tsx"
+      ]
+    },
+    "src/data": {
+      "path": "src/data",
+      "purpose": "Data files",
+      "fileCount": 0,
+      "lastAccessed": 1779737482950,
+      "keyFiles": []
+    },
+    "src/utils": {
+      "path": "src/utils",
+      "purpose": "Utility functions",
+      "fileCount": 2,
+      "lastAccessed": 1779737482951,
+      "keyFiles": [
+        "calculations.ts",
+        "hotmart.ts"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "src/components/LandingPage.tsx",
+      "accessCount": 52,
+      "lastAccessed": 1779745301297,
+      "type": "file"
+    },
+    {
+      "path": "src/components/AvatarSVG.tsx",
+      "accessCount": 16,
+      "lastAccessed": 1779644516288,
+      "type": "file"
+    },
+    {
+      "path": "src/App.tsx",
+      "accessCount": 6,
+      "lastAccessed": 1779738438048,
+      "type": "file"
+    },
+    {
+      "path": "src/index.css",
+      "accessCount": 3,
+      "lastAccessed": 1779546357039,
+      "type": "file"
+    },
+    {
+      "path": "src/components/NumberInput.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1779546357915,
+      "type": "file"
+    },
+    {
+      "path": "src/components/ProgressChart.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1779560973555,
+      "type": "file"
+    },
+    {
+      "path": "src/components/AgeCards.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1779563846482,
+      "type": "file"
+    },
+    {
+      "path": "src/components/ScratchCard.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1779547971178,
+      "type": "file"
+    },
+    {
+      "path": "index.html",
+      "accessCount": 2,
+      "lastAccessed": 1779738491219,
+      "type": "file"
+    },
+    {
+      "path": "src/components/QuizStep.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1779545359573,
+      "type": "file"
+    },
+    {
+      "path": "src/context/QuizContext.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1779545364244,
+      "type": "file"
+    },
+    {
+      "path": "src/components/QuizLayout.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1779545364950,
+      "type": "file"
+    },
+    {
+      "path": "package.json",
+      "accessCount": 1,
+      "lastAccessed": 1779546397421,
+      "type": "file"
+    },
+    {
+      "path": "vite.config.ts",
+      "accessCount": 1,
+      "lastAccessed": 1779546402894,
+      "type": "file"
+    },
+    {
+      "path": ".claude/launch.json",
+      "accessCount": 1,
+      "lastAccessed": 1779546417849,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}
