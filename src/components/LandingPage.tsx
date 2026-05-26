@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { useQuiz } from '../context/QuizContext';
-import { AvatarSVG } from './AvatarSVG';
 import { IMCBar } from './IMCBar';
 import { Check, ShieldCheck, Star } from 'lucide-react';
 
@@ -145,13 +144,6 @@ export const LandingPage: React.FC = () => {
   const discountCode   = `${firstNameUpper}_MAY26`;
   const finalCode      = `${firstNameUpper}_FINAL`;
 
-  const imcValue = imc ?? (
-    pesoActual && state.estatura
-      ? pesoActual / Math.pow(state.estatura / 100, 2)
-      : 27
-  );
-  const currentBodyType = imcValue >= 30 ? 'heavy' : imcValue >= 25 ? 'medium' : imcValue >= 22 ? 'fit' : 'slim' as const;
-  const goalBodyType    = currentBodyType === 'heavy' ? 'medium' : currentBodyType === 'medium' ? 'fit' : 'slim' as const;
 
   const imcLabel = imc == null ? '—'
     : imc < 18.5 ? 'Bajo peso'
@@ -241,34 +233,53 @@ export const LandingPage: React.FC = () => {
 
               {/* Characters */}
               <div style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr auto 1fr',
-                alignItems: 'flex-end',
                 background: '#F5F0EB',
-                borderRadius: '0 0 16px 16px',
-                padding: '0 16px 16px 16px',
-                minHeight: '460px',
+                display: 'flex',
+                alignItems: 'flex-end',
+                justifyContent: 'space-around',
+                padding: '0 8px',
+                minHeight: '320px',
               }}>
                 {/* Chica AHORA */}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <AvatarSVG bodyType={currentBodyType} size={500} />
-                  <span style={{ fontSize: '18px', fontWeight: 900, color: '#EF4444', marginTop: '8px' }}>
-                    {pesoActual} kg
+                  <img
+                    src="/chica-ahora.png"
+                    alt="antes"
+                    style={{
+                      width: '140px',
+                      height: '280px',
+                      objectFit: 'contain',
+                      objectPosition: 'center',
+                      display: 'block',
+                    }}
+                  />
+                  <span style={{ fontSize: '20px', fontWeight: 900, color: '#EF4444', padding: '8px 0' }}>
+                    {pesoActual ?? '70'} kg
                   </span>
                 </div>
 
                 {/* Flechas centro */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '0 8px' }}>
-                  <span style={{ color: '#999', fontSize: '20px' }}>›</span>
-                  <span style={{ color: '#999', fontSize: '20px' }}>›</span>
-                  <span style={{ color: '#999', fontSize: '20px' }}>›</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', paddingBottom: '40px' }}>
+                  <span style={{ color: '#9CA3AF', fontSize: '22px', lineHeight: 1 }}>›</span>
+                  <span style={{ color: '#9CA3AF', fontSize: '22px', lineHeight: 1 }}>›</span>
+                  <span style={{ color: '#9CA3AF', fontSize: '22px', lineHeight: 1 }}>›</span>
                 </div>
 
                 {/* Chica OBJETIVO */}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <AvatarSVG bodyType={goalBodyType} size={500} />
-                  <span style={{ fontSize: '18px', fontWeight: 900, color: '#22C55E', marginTop: '8px' }}>
-                    {pesoObjetivo} kg
+                  <img
+                    src="/chica-objetivo.png"
+                    alt="objetivo"
+                    style={{
+                      width: '140px',
+                      height: '280px',
+                      objectFit: 'contain',
+                      objectPosition: 'center',
+                      display: 'block',
+                    }}
+                  />
+                  <span style={{ fontSize: '20px', fontWeight: 900, color: '#22C55E', padding: '8px 0' }}>
+                    {pesoObjetivo ?? '60'} kg
                   </span>
                 </div>
               </div>
