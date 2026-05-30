@@ -45,13 +45,22 @@ const FlipDigit: React.FC<{ value: string }> = ({ value }) => (
   </AnimatePresence>
 );
 
-const FlipTimer: React.FC<{ initialSeconds: number }> = ({ initialSeconds }) => {
+const FlipTimer: React.FC<{ initialSeconds: number; onExpire?: () => void }> = ({ initialSeconds, onExpire }) => {
   const [timeLeft, setTimeLeft] = useState(initialSeconds);
+  const expiredCalled = useRef(false);
+
   useEffect(() => {
-    if (timeLeft <= 0) return;
+    if (timeLeft <= 0) {
+      if (!expiredCalled.current) {
+        expiredCalled.current = true;
+        onExpire?.();
+      }
+      return;
+    }
     const id = setInterval(() => setTimeLeft(t => t - 1), 1000);
     return () => clearInterval(id);
-  }, [timeLeft]);
+  }, [timeLeft, onExpire]);
+
   const m = String(Math.floor(timeLeft / 60)).padStart(2, '0');
   const s = String(timeLeft % 60).padStart(2, '0');
   return (
@@ -98,26 +107,21 @@ const ProgressBars: React.FC<{ filled: number; total?: number; color: string; de
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
-const PLANS = [
-  { key: '1_week'   as const, label: 'Acceso de 1 semana',   priceOld: '$27.99', price: '$19.99', perDay: '$2.85/día', popular: false },
-  { key: '4_weeks'  as const, label: 'Acceso de 4 semanas',  priceOld: '$47.99', price: '$17.99', perDay: '$0.64/día', popular: true  },
-  { key: '12_weeks' as const, label: 'Acceso de 12 semanas', priceOld: '$67.99', price: '$27.99', perDay: '$0.33/día', popular: false },
-];
 
 const TESTIMONIALS = [
   {
-    name: 'María S.', location: 'Ciudad de México', kg: '-5 kg',
-    quote: '"Nunca pensé que comiendo más iba a bajar de peso. El método hormonal me cambió la vida."',
+    name: 'María Sánchez', location: 'Ciudad de México', kg: '-4 kg',
+    quote: '"La verdad yo ya no creía en nada. He probado de todo... la dieta keto, el ayuno, hasta unas pastillas que me mandó mi cuñada. Nada. Con esto en la tercera semana me subí a la báscula y dije \'esto no puede ser\'. Bajé 4 kilos sin pasar un solo día de hambre. Mi esposo me preguntó qué estaba haciendo diferente."',
     img: '/testimonio-1.png',
   },
   {
-    name: 'Carolina M.', location: 'Bogotá, Colombia', kg: '-7 kg',
-    quote: '"El cortisol era mi enemigo sin saberlo. En 4 semanas bajé la barriga hormonal."',
+    name: 'Carolina Mendoza', location: 'Bogotá, Colombia', kg: '-7 kg',
+    quote: '"Yo llegué a pensar que era mi edad. Que después de los 40 el cuerpo ya no responde. Me hice el quiz casi por curiosidad... y cuando vi los resultados entendí por qué nada me había funcionado antes. En 4 semanas bajé 7 kilos. La barriga que tenía hace años. No lo puedo creer todavía."',
     img: '/testimonio-2.png',
   },
   {
-    name: 'Valentina R.', location: 'Lima, Perú', kg: '-6 kg',
-    quote: '"Me puse los jeans que llevaban 2 años guardados. ¡Esto funciona de verdad!"',
+    name: 'Valentina Ríos', location: 'Lima, Perú', kg: '-6 kg',
+    quote: '"Me probé unos jeans que tenía guardados desde hace como dos años. Los tenía ahí como \'algún día\'. El otro día los agarré casi como chiste... y me cerraron. Lloré, ¿sabes? De verdad lloré. Le mandé foto a mi hermana de inmediato. Ella ya también está haciendo el quiz."',
     img: '/testimonio-3.png',
   },
 ];
@@ -129,6 +133,24 @@ const METRICS = [
   { icon: '🌡️', label: 'Estado metabólico', valFn: () => 'Aceleración posible' },
 ];
 
+const BONOS = [
+  {
+    img: '/bono-1.png',
+    nombre: 'Guía de Alimentos Anti-Cortisol',
+    desc: 'Descubre exactamente qué alimentos están elevando tu cortisol sin que lo sepas — y cuáles lo bajan desde la primera semana.',
+  },
+  {
+    img: '/bono-2.png',
+    nombre: 'Protocolo Nocturno de 5 Días',
+    desc: 'Las 5 noches que resetean tu metabolismo hormonal mientras duermes. Sin ejercicio. Sin dieta. Solo mientras descansas.',
+  },
+  {
+    img: '/bono-3.png',
+    nombre: 'SOS Ansiedad por Comida',
+    desc: 'Para el momento exacto en que tu cuerpo pide azúcar o harinas. El protocolo de emergencia que corta el ciclo hormonal del antojo en menos de 10 minutos.',
+  },
+];
+
 // ─────────────────────────────────────────────────────────────────────────────
 export const LandingPage: React.FC = () => {
   const { state } = useQuiz();
@@ -137,13 +159,16 @@ export const LandingPage: React.FC = () => {
     eventoProximo, email, nombre,
   } = state;
 
-  const [selectedPlan, setSelectedPlan] = useState<'1_week' | '4_weeks' | '12_weeks'>('4_weeks');
+  const [timerExpired, setTimerExpired] = useState(false);
+  const [expandedTestimonials, setExpandedTestimonials] = useState<Set<number>>(new Set());
 
-  // Derived values
-  const firstNameUpper = nombre ? nombre.split(' ')[0].toUpperCase() : 'USUARIA';
-  const discountCode   = `${firstNameUpper}_MAY26`;
-  const finalCode      = `${firstNameUpper}_FINAL`;
-
+  const toggleTestimonial = (i: number) => {
+    setExpandedTestimonials(prev => {
+      const next = new Set(prev);
+      next.has(i) ? next.delete(i) : next.add(i);
+      return next;
+    });
+  };
 
   const imcLabel = imc == null ? '—'
     : imc < 18.5 ? 'Bajo peso'
@@ -173,14 +198,20 @@ export const LandingPage: React.FC = () => {
       {/* ── Sticky header ── */}
       <header className="sticky top-0 z-50 bg-[#2C1810] px-4 py-2.5 flex items-center justify-between gap-3">
         <div className="text-xs text-white/80 font-medium">
-          ⏳ Tu descuento expira en: <FlipTimer initialSeconds={600} />
+          {timerExpired
+            ? <span className="text-yellow-300 font-bold">⏰ Tu sesión está por expirar — completa tu acceso ahora</span>
+            : <>⏳ Tu descuento expira en: <FlipTimer initialSeconds={600} onExpire={() => setTimerExpired(true)} /></>
+          }
         </div>
-        <ShimmerButton
+        <motion.button
           onClick={irAHotmart}
-          className="bg-[#4CAF50] text-white px-4 py-1.5 rounded-full font-bold text-xs whitespace-nowrap hover:bg-green-600 active:scale-95 transition-all"
+          className="relative overflow-hidden text-white px-4 py-1.5 rounded-full font-bold text-xs whitespace-nowrap active:scale-95 transition-all"
+          style={{ background: timerExpired ? '#DC2626' : '#4CAF50' }}
+          animate={timerExpired ? { opacity: [1, 0.5, 1] } : {}}
+          transition={timerExpired ? { duration: 0.8, repeat: Infinity } : {}}
         >
           OBTÉN MI PLAN
-        </ShimmerButton>
+        </motion.button>
       </header>
 
       {/* ── Barra cupos limitados ── */}
@@ -349,6 +380,143 @@ export const LandingPage: React.FC = () => {
           </FadeUp>
         )}
 
+        {/* ── BLOQUE 2: Diagnóstico hormonal completo ── */}
+        <FadeUp>
+          <section style={{ background: '#F5F0E8', borderRadius: '24px', padding: '28px 20px', border: '1px solid #E8DDD5' }}>
+            <h2 style={{ fontSize: '20px', fontWeight: 900, color: '#1A1A1A', marginBottom: '6px', lineHeight: 1.3 }}>
+              Esto es lo que está pasando en tu cuerpo
+            </h2>
+            <p style={{ fontSize: '12px', color: '#888', marginBottom: '20px', fontWeight: 500 }}>
+              Basado en tus respuestas del quiz
+            </p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              {(() => {
+                const tipo = tipoHormonal || 'Estrés Metabólico';
+
+                const DIAGNOSTICOS: Record<string, { icon: string; titulo: string; texto: string }[]> = {
+                  'Estrés Metabólico': [
+                    {
+                      icon: '🔥',
+                      titulo: 'Tu cortisol está elevado',
+                      texto: 'Cuando el cortisol se mantiene alto, tu cuerpo activa un mecanismo de emergencia: almacena grasa abdominal como \'reserva de supervivencia\'. Por eso comes bien y no bajas.',
+                    },
+                    {
+                      icon: '⚡',
+                      titulo: 'Tu metabolismo está en modo ahorro',
+                      texto: 'Con estrés metabólico crónico, tu cuerpo quema hasta 40% menos calorías de lo normal. No es falta de voluntad — es química hormonal.',
+                    },
+                    {
+                      icon: '🌙',
+                      titulo: 'Tu ciclo de sueño afecta tu peso',
+                      texto: 'El cortisol elevado interrumpe la producción de melatonina y leptina — la hormona que le dice a tu cuerpo cuándo parar de comer. El resultado: antojos nocturnos que no puedes controlar.',
+                    },
+                  ],
+                  'Cortisol Dominante': [
+                    {
+                      icon: '🔥',
+                      titulo: 'Tu cortisol está crónicamente elevado',
+                      texto: 'Cuando el cortisol domina, tu cuerpo prioriza almacenar grasa abdominal como \'reserva de emergencia\'. Por eso el ejercicio y las dietas no funcionan como deberían.',
+                    },
+                    {
+                      icon: '⚡',
+                      titulo: 'Tu metabolismo está bloqueado',
+                      texto: 'El cortisol dominante bloquea las hormonas que regulan cuánta energía quemas. Tu cuerpo trabaja contra ti, no contigo — por eso el esfuerzo no se traduce en resultados.',
+                    },
+                    {
+                      icon: '🌙',
+                      titulo: 'Tu ritmo de cortisol interrumpe el sueño',
+                      texto: 'El cortisol normal baja de noche. Con cortisol dominante se mantiene alto, interrumpiendo la melatonina y creando el ciclo de insomnio, fatiga y antojos nocturnos.',
+                    },
+                  ],
+                  'Insulino Resistente': [
+                    {
+                      icon: '🍬',
+                      titulo: 'Tu insulina no está respondiendo bien',
+                      texto: 'Cuando las células resisten la insulina, el azúcar no llega a los músculos — se convierte directamente en grasa. Por eso sientes hambre poco después de comer.',
+                    },
+                    {
+                      icon: '⚡',
+                      titulo: 'Tus bajones de energía son metabólicos',
+                      texto: 'Los bajones después del almuerzo son señal clara de resistencia a la insulina. Tu cuerpo no convierte la glucosa en energía de forma eficiente — y eso frena la quema de grasa.',
+                    },
+                    {
+                      icon: '🌙',
+                      titulo: 'Los antojos de dulces tienen causa hormonal',
+                      texto: 'El antojo constante de dulces no es falta de disciplina — es tu insulina buscando compensación. El ciclo se rompe desde la raíz hormonal, no con fuerza de voluntad.',
+                    },
+                  ],
+                  'En Transición Hormonal': [
+                    {
+                      icon: '🌸',
+                      titulo: 'Tu cuerpo está en una transición hormonal real',
+                      texto: 'A partir de los 45, los niveles de estrógeno y progesterona fluctúan. Esto hace que la grasa se redistribuya hacia el abdomen aunque no hayas cambiado tus hábitos.',
+                    },
+                    {
+                      icon: '⚡',
+                      titulo: 'Tu metabolismo cambió, no tú',
+                      texto: 'La caída de estrógeno reduce hasta 30% la capacidad muscular de quemar glucosa. Lo que funcionaba antes ya no funciona — porque tu biología cambió, no tu disciplina.',
+                    },
+                    {
+                      icon: '🌙',
+                      titulo: 'El sueño y el peso están conectados',
+                      texto: 'En la transición hormonal, el sueño fragmentado eleva el cortisol y reduce la hormona de crecimiento — dos claves para quemar grasa mientras duermes.',
+                    },
+                  ],
+                };
+
+                const bloques = DIAGNOSTICOS[tipo] ?? DIAGNOSTICOS['Estrés Metabólico'];
+
+                return bloques.map((b, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: i * 0.1 }}
+                    style={{
+                      background: 'white',
+                      borderRadius: '16px',
+                      padding: '16px',
+                      display: 'flex',
+                      gap: '14px',
+                      alignItems: 'flex-start',
+                      boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+                    }}
+                  >
+                    <span style={{ fontSize: '26px', flexShrink: 0, lineHeight: 1.2 }}>{b.icon}</span>
+                    <div>
+                      <p style={{ fontWeight: 800, fontSize: '14px', color: '#1A1A1A', marginBottom: '5px' }}>{b.titulo}</p>
+                      <p style={{ fontSize: '13px', color: '#555', lineHeight: 1.55, margin: 0 }}>{b.texto}</p>
+                    </div>
+                  </motion.div>
+                ));
+              })()}
+            </div>
+
+            <p style={{ marginTop: '20px', fontWeight: 800, fontSize: '14px', color: '#166534', textAlign: 'center' }}>
+              ✅ La buena noticia: este patrón tiene solución específica.
+            </p>
+          </section>
+        </FadeUp>
+
+        {/* ── BLOQUE 3: Transición natural hacia el programa ── */}
+        <FadeUp>
+          <section style={{ background: 'white', textAlign: 'center', padding: '8px 4px' }}>
+            <h2 style={{ fontSize: '22px', fontWeight: 900, color: '#1A1A1A', marginBottom: '12px', lineHeight: 1.3 }}>
+              Tu plan hormonal personalizado ya está listo
+            </h2>
+            <p style={{ fontSize: '14px', color: '#444', lineHeight: 1.65, marginBottom: '20px' }}>
+              Basado en tu perfil de <strong style={{ color: '#2C1810' }}>{tipoHormonal || 'Estrés Metabólico'}</strong>, diseñamos un protocolo de 28 días específico para bajar el cortisol, reactivar tu metabolismo y eliminar la grasa abdominal hormonal — sin dietas extremas, sin ejercicio intenso.
+            </p>
+            <div style={{ borderTop: '1px solid #E8DDD5', paddingTop: '16px' }}>
+              <p style={{ fontSize: '13px', fontWeight: 700, color: '#666', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                Esto es lo que incluye tu programa:
+              </p>
+            </div>
+          </section>
+        </FadeUp>
+
         {/* ── Pricing ── */}
         <FadeUp delay={0.05}>
           <section id="precios">
@@ -356,67 +524,137 @@ export const LandingPage: React.FC = () => {
               Obtén tu plan con un descuento mayor
             </h2>
 
-            {/* Promo badge + timer */}
-            <div className="bg-[#166534] rounded-2xl p-4 mb-5 flex flex-col items-center gap-2.5">
-              <div className="flex items-center gap-3">
-                <span className="font-mono text-xs text-white/50 line-through">{discountCode}</span>
-                <span className="text-white text-xs opacity-60">→</span>
-                <span className="font-mono text-sm font-black text-white bg-white/15 px-3 py-0.5 rounded-full">
-                  {finalCode}
-                </span>
-              </div>
-              <span className="bg-white text-green-800 font-black text-sm px-4 py-1 rounded-full flex items-center gap-1.5">
-                <Check size={13} /> 30% OFF aplicado
+            {/* Single price card */}
+            <div className="bg-[#166534] rounded-2xl p-5 mb-5 flex flex-col items-center gap-3">
+              <span className="bg-white text-green-800 font-black text-sm px-5 py-1.5 rounded-full flex items-center gap-2">
+                <Check size={14} /> 30% DE DESCUENTO APLICADO ✅
               </span>
+              <div className="flex items-center gap-4">
+                <span className="text-white/50 line-through text-xl font-bold">$46.99</span>
+                <span className="text-white font-black text-5xl leading-none">$16.99</span>
+              </div>
+              <p className="text-white/70 text-xs text-center">
+                Pago único · Acceso de por vida · Sin suscripciones
+              </p>
               <div className="text-white/75 text-xs flex items-center gap-1.5">
                 ⏳ Este precio expira en: <FlipTimer initialSeconds={595} />
               </div>
             </div>
 
-            {/* Plan cards */}
-            <div className="flex flex-col gap-3 mb-5">
-              {PLANS.map(plan => (
-                <motion.div
-                  key={plan.key}
-                  whileTap={{ scale: 0.985 }}
-                  onClick={() => { setSelectedPlan(plan.key); trackEvent('InitiateCheckout', { value: 17.99, currency: 'USD' }); }}
-                  className={`relative rounded-2xl p-4 cursor-pointer border-2 transition-all flex items-center gap-4
-                    ${selectedPlan === plan.key
-                      ? 'border-[#2C1810] bg-[#F5F0EB] shadow-lg shadow-[#2C1810]/10'
-                      : 'border-gray-200 bg-white hover:border-gray-300'
-                    }`}
-                >
-                  <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors
-                    ${selectedPlan === plan.key ? 'border-[#2C1810]' : 'border-gray-300'}`}
-                  >
-                    {selectedPlan === plan.key && (
-                      <div className="w-2.5 h-2.5 rounded-full bg-[#2C1810]" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    {plan.popular && (
-                      <p className="text-[10px] font-black text-[#2C1810] uppercase tracking-widest mb-0.5">✅ Más popular</p>
-                    )}
-                    <p className={`font-bold text-sm ${selectedPlan === plan.key ? 'text-[#1A1A1A]' : 'text-[#555]'}`}>
-                      {plan.label}
-                    </p>
-                    <p className="text-xs text-[#999]">{plan.perDay}</p>
-                  </div>
-                  <div className="text-right flex-shrink-0">
-                    <p className="text-xs line-through text-[#bbb]">{plan.priceOld}</p>
-                    <p className={`font-black text-2xl leading-tight ${selectedPlan === plan.key ? 'text-[#2C1810]' : 'text-[#1A1A1A]'}`}>
-                      {plan.price}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+            {/* ── Bonos section ── */}
+            <FadeUp>
+              <div style={{
+                background: '#FFF8F0',
+                border: '2px solid #F59E0B',
+                borderRadius: '20px',
+                padding: '24px 20px',
+                marginBottom: '20px',
+              }}>
+                <h3 style={{
+                  fontSize: '20px',
+                  fontWeight: '900',
+                  color: '#1A1A1A',
+                  textAlign: 'center',
+                  marginBottom: '4px',
+                }}>
+                  🎁 Bonos exclusivos incluidos con tu programa
+                </h3>
+                <p style={{
+                  textAlign: 'center',
+                  color: '#DC2626',
+                  fontWeight: '700',
+                  fontSize: '13px',
+                  marginBottom: '20px',
+                }}>
+                  ⚠️ Solo disponibles si completas tu acceso hoy
+                </p>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  {BONOS.map((bono, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: i * 0.1 }}
+                      style={{
+                        background: 'white',
+                        borderRadius: '16px',
+                        padding: '16px',
+                        display: 'flex',
+                        gap: '14px',
+                        alignItems: 'flex-start',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
+                        border: '1px solid #F3E8D0',
+                      }}
+                    >
+                      <img
+                        src={bono.img}
+                        alt={bono.nombre}
+                        style={{
+                          width: 'clamp(120px, 22vw, 140px)',
+                          height: 'auto',
+                          objectFit: 'contain',
+                          flexShrink: 0,
+                          borderRadius: '8px',
+                          alignSelf: 'center',
+                          filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.15))',
+                        }}
+                      />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p style={{ fontWeight: '800', fontSize: '14px', color: '#1A1A1A', marginBottom: '6px', lineHeight: 1.3 }}>
+                          {bono.nombre}
+                        </p>
+                        <p style={{ fontSize: '12px', color: '#555', lineHeight: 1.5, marginBottom: '10px' }}>
+                          {bono.desc}
+                        </p>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontSize: '12px', color: '#9CA3AF', textDecoration: 'line-through' }}>
+                            Valor: $19.99
+                          </span>
+                          <span style={{
+                            background: '#16A34A',
+                            color: 'white',
+                            fontSize: '10px',
+                            fontWeight: '800',
+                            padding: '2px 8px',
+                            borderRadius: '20px',
+                            letterSpacing: '0.5px',
+                          }}>
+                            INCLUIDO GRATIS
+                          </span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Urgencia bonos */}
+                <div style={{
+                  background: '#7F1D1D',
+                  borderRadius: '12px',
+                  padding: '14px 16px',
+                  marginTop: '18px',
+                }}>
+                  <p style={{
+                    color: 'white',
+                    fontSize: '13px',
+                    fontWeight: '700',
+                    textAlign: 'center',
+                    lineHeight: 1.5,
+                    margin: 0,
+                  }}>
+                    🚨 Si sales de esta página ahora, estos bonos NO estarán disponibles cuando regreses. Tu descuento y bonos expiran con esta sesión.
+                  </p>
+                </div>
+              </div>
+            </FadeUp>
 
             <ShimmerButton
-              onClick={() => { trackEvent('AddToCart', { content_name: 'El Método Hormonal', value: 17.99, currency: 'USD' }); irAHotmart(); }}
+              onClick={() => { trackEvent('AddToCart', { content_name: 'El Método Hormonal', value: 16.99, currency: 'USD' }); irAHotmart(); }}
               className="w-full py-4 rounded-full bg-[#2C1810] text-white font-black text-lg mb-3 active:scale-95 transition-transform"
             >
-              OBTENER MI PROGRAMA →
+              OBTENER MI PROGRAMA + BONOS →
             </ShimmerButton>
             <p className="text-center text-xs text-[#999]">
               Pago único. Sin suscripciones ocultas. Sin cargos automáticos.
@@ -527,7 +765,7 @@ export const LandingPage: React.FC = () => {
                 fontWeight: '700',
                 margin: 0
               }}>
-                ⚠️ Solo 23 códigos de activación disponibles esta semana. Una vez agotados el precio sube a $47.99
+                ⚠️ Solo 23 códigos de activación disponibles esta semana. Una vez agotados el precio sube a $46.99
               </p>
             </div>
           </section>
@@ -540,14 +778,13 @@ export const LandingPage: React.FC = () => {
             {/* Badge superior */}
             <div className="flex justify-center mb-4">
               <span className="bg-green-100 text-green-700 text-xs font-bold px-4 py-2 rounded-full tracking-wide uppercase">
-                ✓ Acceso inmediato después del pago
+                📧 Recibes tu acceso por email en menos de 24 horas
               </span>
             </div>
 
             {/* Título */}
             <h2 className="text-3xl font-black text-center text-[#1A1A1A] mb-2 leading-tight">
               Esto es lo que recibes
-              <span className="text-[#2C1810]"> hoy mismo</span>
             </h2>
             <p className="text-center text-gray-500 mb-10 text-sm">
               Sin descargas. Sin apps. Funciona en cualquier dispositivo desde el navegador.
@@ -704,7 +941,7 @@ export const LandingPage: React.FC = () => {
               >
                 Ver mi plan completo →
               </button>
-              <p className="text-xs text-gray-400 mt-2">Acceso inmediato • Pago único • Sin suscripciones</p>
+              <p className="text-xs text-gray-400 mt-2">Acceso en 24 horas • Pago único • Sin suscripciones</p>
             </div>
           </section>
         </FadeUp>
@@ -719,7 +956,6 @@ export const LandingPage: React.FC = () => {
                 { icon: '🍽️', title: 'Recetas latinas altas en proteína',       desc: 'Baja de peso disfrutando los sabores que amas' },
                 { icon: '🥄', title: 'Instrucciones paso a paso',                desc: 'Con ingredientes que encuentras en cualquier mercado' },
                 { icon: '💡', title: 'Guía de alimentos hormonales',             desc: 'Para eliminar la grasa abdominal de origen hormonal' },
-                { icon: '🎁', title: 'BONO: Reset de 7 días',                    desc: 'El protocolo de emergencia que activa tu quema de grasa' },
               ].map(item => (
                 <li key={item.title} className="flex gap-3 items-start">
                   <span className="text-2xl flex-shrink-0">{item.icon}</span>
@@ -733,15 +969,18 @@ export const LandingPage: React.FC = () => {
           </section>
         </FadeUp>
 
-        {/* ── Media logos ── */}
+        {/* ── Credibilidad (reemplaza logos de medios) ── */}
         <FadeUp>
           <section className="text-center">
-            <p className="text-xs font-bold tracking-widest text-[#666666] uppercase mb-4">Tal como se presenta en</p>
-            <div className="flex justify-center gap-5 items-center opacity-40 grayscale flex-wrap">
-              {['Forbes', 'Healthline', "Women's Health", 'Glamour'].map(m => (
-                <span key={m} className="font-black text-sm text-[#1A1A1A]">{m}</span>
-              ))}
-            </div>
+            <p className="text-xs font-bold tracking-widest text-[#666666] uppercase mb-3">
+              Desarrollado con base en
+            </p>
+            <p className="text-base font-black text-[#2C1810] leading-snug max-w-xs mx-auto">
+              Perfiles hormonales reales de mujeres latinoamericanas
+            </p>
+            <p className="text-xs text-[#999] mt-2">
+              Programa en acceso beta — plazas limitadas esta semana
+            </p>
           </section>
         </FadeUp>
 
@@ -788,9 +1027,16 @@ export const LandingPage: React.FC = () => {
                     <div className="flex text-yellow-400 mb-1.5">
                       {Array(5).fill(0).map((_, j) => <Star key={j} fill="currentColor" size={11} />)}
                     </div>
-                    <p className="text-xs text-[#1A1A1A] italic leading-relaxed mb-2 line-clamp-3">{t.quote}</p>
-                    <button className="text-xs text-[#2C1810] font-bold underline underline-offset-2">
-                      Ver más
+                    <p
+                      className={`text-xs text-[#1A1A1A] italic leading-relaxed mb-2 transition-all duration-300 ${expandedTestimonials.has(i) ? '' : 'line-clamp-3'}`}
+                    >
+                      {t.quote}
+                    </p>
+                    <button
+                      onClick={() => toggleTestimonial(i)}
+                      className="text-xs text-[#2C1810] font-bold underline underline-offset-2"
+                    >
+                      {expandedTestimonials.has(i) ? 'Ver menos' : 'Ver más'}
                     </button>
                   </div>
                 </motion.div>
@@ -803,19 +1049,87 @@ export const LandingPage: React.FC = () => {
           </section>
         </FadeUp>
 
+        {/* ── ¿Por qué funciona cuando todo lo demás falló? ── */}
+        <FadeUp>
+          <section style={{
+            background: '#F5F0EB',
+            borderRadius: '24px',
+            padding: '28px 20px',
+            border: '1px solid #E8DDD5',
+          }}>
+            <h2 style={{
+              fontSize: '20px',
+              fontWeight: '900',
+              color: '#1A1A1A',
+              textAlign: 'center',
+              marginBottom: '20px',
+              lineHeight: 1.3,
+            }}>
+              ¿Por qué funciona cuando todo lo demás falló?
+            </h2>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {[
+                {
+                  icon: '🔬',
+                  title: 'Basado en tu perfil hormonal único',
+                  desc: 'No es una dieta genérica. Cada plan se genera según tu tipo hormonal específico detectado en el quiz.',
+                },
+                {
+                  icon: '🌎',
+                  title: 'Diseñado para la mujer latinoamericana',
+                  desc: 'Con alimentos reales que encuentras en cualquier mercado de México, Colombia, Argentina, Chile o Perú.',
+                },
+                {
+                  icon: '💬',
+                  title: 'Soporte ilimitado por WhatsApp',
+                  desc: 'No estás sola. Tienes acceso ilimitado a soporte real — sin límite de preguntas, sin límite de tiempo.',
+                },
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: i * 0.1 }}
+                  style={{
+                    background: 'white',
+                    borderRadius: '16px',
+                    padding: '16px',
+                    display: 'flex',
+                    gap: '14px',
+                    alignItems: 'flex-start',
+                    boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+                  }}
+                >
+                  <span style={{ fontSize: '28px', flexShrink: 0 }}>{item.icon}</span>
+                  <div>
+                    <p style={{ fontWeight: '800', fontSize: '14px', color: '#1A1A1A', marginBottom: '4px' }}>
+                      {item.title}
+                    </p>
+                    <p style={{ fontSize: '13px', color: '#555', lineHeight: 1.5, margin: 0 }}>
+                      {item.desc}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </section>
+        </FadeUp>
+
         {/* ── Dark CTA ── */}
         <FadeUp>
           <section className="bg-[#2C1810] rounded-3xl p-6 text-center text-white">
             <h2 className="text-xl font-black mb-1">¡Obtén resultados visibles en 4 semanas!</h2>
-            <p className="text-sm opacity-80 mb-4">Únete a 47.000+ mujeres que ya transformaron sus hormonas</p>
+            <p className="text-sm opacity-80 mb-4">Programa en acceso beta — plazas limitadas esta semana</p>
             <p className="text-xs bg-white/10 rounded-full px-3 py-1 inline-block mb-4">
-              ✅ Código <span className="font-mono">{finalCode}</span> aplicado
+              ✅ 30% DE DESCUENTO APLICADO
             </p>
             <ShimmerButton
-              onClick={() => { trackEvent('AddToCart', { content_name: 'El Método Hormonal', value: 17.99, currency: 'USD' }); irAHotmart(); }}
+              onClick={() => { trackEvent('AddToCart', { content_name: 'El Método Hormonal', value: 16.99, currency: 'USD' }); irAHotmart(); }}
               className="w-full py-4 rounded-full bg-white text-[#2C1810] font-black text-lg hover:bg-gray-100 active:scale-95 transition-all"
             >
-              OBTENER MI PROGRAMA →
+              OBTENER MI PROGRAMA + BONOS →
             </ShimmerButton>
             <p className="text-xs opacity-50 mt-3">Pago único. Sin suscripciones.</p>
           </section>
@@ -824,11 +1138,35 @@ export const LandingPage: React.FC = () => {
         {/* ── Guarantee ── */}
         <FadeUp>
           <section className="text-center pb-4">
-            <div className="inline-flex flex-col items-center border-2 border-green-500 rounded-2xl p-6 bg-green-50 max-w-xs">
-              <ShieldCheck size={48} className="text-green-600 mb-3" />
-              <h3 className="font-black text-green-800 text-lg mb-2">Garantía de 30 días</h3>
+            <div className="inline-flex flex-col items-center border-2 border-green-500 rounded-2xl p-6 bg-green-50 w-full max-w-sm mx-auto">
+              <div style={{
+                background: '#16A34A',
+                borderRadius: '50%',
+                width: '72px',
+                height: '72px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '16px',
+              }}>
+                <ShieldCheck size={40} className="text-white" />
+              </div>
+              <span style={{
+                background: '#16A34A',
+                color: 'white',
+                fontSize: '11px',
+                fontWeight: '800',
+                letterSpacing: '2px',
+                padding: '4px 14px',
+                borderRadius: '20px',
+                marginBottom: '12px',
+                display: 'inline-block',
+              }}>
+                GARANTÍA 30 DÍAS SIN RIESGO
+              </span>
+              <h3 className="font-black text-green-800 text-xl mb-3">Tu inversión está 100% protegida</h3>
               <p className="text-sm text-green-700 leading-relaxed">
-                Si sigues el programa y no ves resultados, te devolvemos tu dinero. Sin preguntas.
+                Si en 30 días sigues el programa y no notas ningún cambio en cómo te sientes, te devolvemos cada centavo. Sin preguntas. Sin formularios. Solo escríbenos por WhatsApp.
               </p>
             </div>
           </section>

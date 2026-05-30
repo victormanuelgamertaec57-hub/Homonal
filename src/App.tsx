@@ -131,12 +131,12 @@ const QuizRouter: React.FC = () => {
     return (
       <div className="w-full max-w-[640px] mx-auto min-h-screen bg-[#FAF8F5] flex flex-col items-center justify-center px-5 py-10">
         <p className="text-xs font-bold tracking-widest text-[#2C1810] uppercase mb-2">
-          ¡Exclusivo para ti!
+          🎰 ¡Tu premio está aquí!
         </p>
         <h2 className="text-2xl font-black text-center text-[#1A1A1A] mb-2">
           🎁 ¡Raspa tu descuento!
         </h2>
-        <p className="text-sm text-[#666666] text-center mb-6">Solo para nuevas usuarias</p>
+        <p className="text-sm text-[#666666] text-center mb-6">Raspa para revelar tu descuento secreto</p>
         <ScratchCard
           onReveal={() => setStep(99)}
           discountCode={code}
