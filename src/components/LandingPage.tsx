@@ -8,8 +8,12 @@ declare global {
   interface Window { fbq?: (...args: any[]) => void; }
 }
 
+const generateEventId = (eventName: string) =>
+  `${eventName}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
 const trackEvent = (event: string, params?: object) => {
-  window.fbq?.('track', event, params);
+  const eventId = generateEventId(event);
+  window.fbq?.('track', event, params, { eventID: eventId });
 };
 
 // ── Fade-up wrapper ────────────────────────────────────────────────────────
