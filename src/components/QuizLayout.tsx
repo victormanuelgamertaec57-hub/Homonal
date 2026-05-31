@@ -12,11 +12,11 @@ interface QuizLayoutProps {
 
 // Step ranges for each block (used to color the 5 segments)
 const BLOCKS = [
-  { label: 'Mi Perfil',        start: 2,  end: 6  },
-  { label: 'Alimentación',     start: 8,  end: 17 },
-  { label: 'Actividad',        start: 19, end: 22 },
-  { label: 'Estilo de Vida',   start: 24, end: 27 },
-  { label: 'Casi Listo',       start: 28, end: 34 },
+  { label: 'Mi Perfil',   start: 0,  end: 3  },
+  { label: 'Mis Hábitos', start: 4,  end: 5  },
+  { label: 'Mi Rutina',   start: 7,  end: 8  },
+  { label: 'Mi Cuerpo',   start: 9,  end: 11 },
+  { label: 'Casi Listo',  start: 12, end: 13 },
 ];
 
 function getActiveBlock(step: number): number {

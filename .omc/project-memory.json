@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1779737482955,
+  "lastScanned": 1780149648945,
   "projectRoot": "/Users/victorhoyos/.gemini/antigravity/scratch/metodo-hormonal-quiz",
   "techStack": {
     "languages": [
@@ -73,24 +73,24 @@
     "dist": {
       "path": "dist",
       "purpose": "Distribution/build output",
-      "fileCount": 12,
-      "lastAccessed": 1779737482923,
+      "fileCount": 16,
+      "lastAccessed": 1780149648936,
       "keyFiles": [
-        "Mujer derecha.png",
-        "Mujer izquierda.png",
-        "edad-18-29.png",
-        "edad-30-39.png",
-        "edad-40-49.png"
+        "BONO 1.png",
+        "BONO 2.png",
+        "BONO 3.png",
+        "chica-ahora.png",
+        "chica-objetivo.png"
       ]
     },
     "public": {
       "path": "public",
       "purpose": "Public files",
-      "fileCount": 11,
-      "lastAccessed": 1779737482924,
+      "fileCount": 12,
+      "lastAccessed": 1780149648936,
       "keyFiles": [
-        "Mujer derecha.png",
-        "Mujer izquierda.png",
+        "chica-ahora.png",
+        "chica-objetivo.png",
         "edad-18-29.png",
         "edad-30-39.png",
         "edad-40-49.png"
@@ -100,7 +100,7 @@
       "path": "src",
       "purpose": "Source code",
       "fileCount": 4,
-      "lastAccessed": 1779737482941,
+      "lastAccessed": 1780149648938,
       "keyFiles": [
         "App.css",
         "App.tsx",
@@ -112,17 +112,17 @@
       "path": "dist/assets",
       "purpose": "Static assets",
       "fileCount": 2,
-      "lastAccessed": 1779737482945,
+      "lastAccessed": 1780149648939,
       "keyFiles": [
-        "index-D9ZbbKLU.css",
-        "index-GUD8eq0u.js"
+        "index-BPbcUwSf.js",
+        "index-D9ZbbKLU.css"
       ]
     },
     "src/assets": {
       "path": "src/assets",
       "purpose": "Static assets",
       "fileCount": 3,
-      "lastAccessed": 1779737482949,
+      "lastAccessed": 1780149648939,
       "keyFiles": [
         "hero.png",
         "react.svg",
@@ -133,7 +133,7 @@
       "path": "src/components",
       "purpose": "UI components",
       "fileCount": 15,
-      "lastAccessed": 1779737482950,
+      "lastAccessed": 1780149648939,
       "keyFiles": [
         "AgeCards.tsx",
         "AvatarSVG.tsx",
@@ -144,14 +144,14 @@
       "path": "src/data",
       "purpose": "Data files",
       "fileCount": 0,
-      "lastAccessed": 1779737482950,
+      "lastAccessed": 1780149648939,
       "keyFiles": []
     },
     "src/utils": {
       "path": "src/utils",
       "purpose": "Utility functions",
       "fileCount": 2,
-      "lastAccessed": 1779737482951,
+      "lastAccessed": 1780149648940,
       "keyFiles": [
         "calculations.ts",
         "hotmart.ts"
