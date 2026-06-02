@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useInView } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { useQuiz } from '../context/QuizContext';
 import { IMCBar } from './IMCBar';
 import { Check, ShieldCheck, Star } from 'lucide-react';
@@ -29,50 +29,6 @@ const FadeUp: React.FC<{ children: React.ReactNode; delay?: number }> = ({ child
     >
       {children}
     </motion.div>
-  );
-};
-
-// ── Flip Timer ─────────────────────────────────────────────────────────────
-const FlipDigit: React.FC<{ value: string }> = ({ value }) => (
-  <AnimatePresence mode="wait">
-    <motion.span
-      key={value}
-      initial={{ rotateX: -90, opacity: 0 }}
-      animate={{ rotateX: 0, opacity: 1 }}
-      exit={{ rotateX: 90, opacity: 0 }}
-      transition={{ duration: 0.2 }}
-      className="inline-block font-mono font-black"
-      style={{ display: 'inline-block' }}
-    >
-      {value}
-    </motion.span>
-  </AnimatePresence>
-);
-
-const FlipTimer: React.FC<{ initialSeconds: number; onExpire?: () => void }> = ({ initialSeconds, onExpire }) => {
-  const [timeLeft, setTimeLeft] = useState(initialSeconds);
-  const expiredCalled = useRef(false);
-
-  useEffect(() => {
-    if (timeLeft <= 0) {
-      if (!expiredCalled.current) {
-        expiredCalled.current = true;
-        onExpire?.();
-      }
-      return;
-    }
-    const id = setInterval(() => setTimeLeft(t => t - 1), 1000);
-    return () => clearInterval(id);
-  }, [timeLeft, onExpire]);
-
-  const m = String(Math.floor(timeLeft / 60)).padStart(2, '0');
-  const s = String(timeLeft % 60).padStart(2, '0');
-  return (
-    <span className="text-white text-sm font-black tabular-nums">
-      <FlipDigit value={m[0]} /><FlipDigit value={m[1]} />
-      <span className="mx-0.5">:</span>
-      <FlipDigit value={s[0]} /><FlipDigit value={s[1]} />
-    </span>
   );
 };
 
@@ -163,7 +119,6 @@ export const LandingPage: React.FC = () => {
     eventoProximo, email, nombre,
   } = state;
 
-  const [timerExpired, setTimerExpired] = useState(false);
   const [expandedTestimonials, setExpandedTestimonials] = useState<Set<number>>(new Set());
 
   const toggleTestimonial = (i: number) => {
@@ -202,34 +157,16 @@ export const LandingPage: React.FC = () => {
       {/* ── Sticky header ── */}
       <header className="sticky top-0 z-50 bg-[#2C1810] px-4 py-2.5 flex items-center justify-between gap-3">
         <div className="text-xs text-white/80 font-medium">
-          {timerExpired
-            ? <span className="text-yellow-300 font-bold">⏰ Tu sesión está por expirar — completa tu acceso ahora</span>
-            : <>⏳ Tu descuento expira en: <FlipTimer initialSeconds={600} onExpire={() => setTimerExpired(true)} /></>
-          }
+          <span className="text-yellow-300 font-bold">🌿 Tu plan hormonal personalizado está listo</span>
         </div>
-        <motion.button
+        <button
           onClick={irAHotmart}
           className="relative overflow-hidden text-white px-4 py-1.5 rounded-full font-bold text-xs whitespace-nowrap active:scale-95 transition-all"
-          style={{ background: timerExpired ? '#DC2626' : '#4CAF50' }}
-          animate={timerExpired ? { opacity: [1, 0.5, 1] } : {}}
-          transition={timerExpired ? { duration: 0.8, repeat: Infinity } : {}}
+          style={{ background: '#4CAF50' }}
         >
           OBTÉN MI PLAN
-        </motion.button>
+        </button>
       </header>
-
-      {/* ── Barra cupos limitados ── */}
-      <div style={{
-        background: '#1A0A05',
-        color: 'white',
-        textAlign: 'center',
-        padding: '8px 16px',
-        fontSize: '13px',
-        fontWeight: '600'
-      }}>
-        ⚡ Solo quedan <span style={{color: '#FFD700', fontWeight: '900'}}>23 cupos</span> disponibles esta semana ·{' '}
-        <span style={{color: '#FFD700'}}>77 mujeres ya activaron su acceso</span>
-      </div>
 
       <main className="px-5 pb-20 space-y-14 pt-6">
 
@@ -531,18 +468,14 @@ export const LandingPage: React.FC = () => {
             {/* Single price card */}
             <div className="bg-[#166534] rounded-2xl p-5 mb-5 flex flex-col items-center gap-3">
               <span className="bg-white text-green-800 font-black text-sm px-5 py-1.5 rounded-full flex items-center gap-2">
-                <Check size={14} /> 30% DE DESCUENTO APLICADO ✅
+                <Check size={14} /> PRECIO DE LANZAMIENTO BETA
               </span>
               <div className="flex items-center gap-4">
-                <span className="text-white/50 line-through text-xl font-bold">$46.99</span>
                 <span className="text-white font-black text-5xl leading-none">$16.99</span>
               </div>
               <p className="text-white/70 text-xs text-center">
-                Pago único · Acceso de por vida · Sin suscripciones
+                Precio de lanzamiento beta · Pago único · Acceso de por vida
               </p>
-              <div className="text-white/75 text-xs flex items-center gap-1.5">
-                ⏳ Este precio expira en: <FlipTimer initialSeconds={595} />
-              </div>
             </div>
 
             {/* ── Bonos section ── */}
@@ -740,7 +673,7 @@ export const LandingPage: React.FC = () => {
               marginTop: '16px'
             }}>
               {[
-                '✅ Acceso activado en 24-48 horas por email',
+                '✅ Tu plan hormonal se construye en 24 horas — recibes acceso por email mañana',
                 '✅ Plan hormonal día por día',
                 '✅ Tracker inteligente con IA',
                 '✅ Recetas latinas personalizadas',
@@ -753,24 +686,6 @@ export const LandingPage: React.FC = () => {
                   margin: 0
                 }}>{item}</p>
               ))}
-            </div>
-
-            {/* Urgencia cupos */}
-            <div style={{
-              background: '#FEF3C7',
-              border: '1px solid #F59E0B',
-              borderRadius: '12px',
-              padding: '12px',
-              marginTop: '20px'
-            }}>
-              <p style={{
-                fontSize: '13px',
-                color: '#92400E',
-                fontWeight: '700',
-                margin: 0
-              }}>
-                ⚠️ Solo 23 códigos de activación disponibles esta semana. Una vez agotados el precio sube a $46.99
-              </p>
             </div>
           </section>
         </FadeUp>
@@ -1127,7 +1042,7 @@ export const LandingPage: React.FC = () => {
             <h2 className="text-xl font-black mb-1">¡Obtén resultados visibles en 4 semanas!</h2>
             <p className="text-sm opacity-80 mb-4">Programa en acceso beta — plazas limitadas esta semana</p>
             <p className="text-xs bg-white/10 rounded-full px-3 py-1 inline-block mb-4">
-              ✅ 30% DE DESCUENTO APLICADO
+              ✅ PRECIO DE LANZAMIENTO BETA
             </p>
             <ShimmerButton
               onClick={() => { trackEvent('AddToCart', { content_name: 'El Método Hormonal', value: 16.99, currency: 'USD' }); irAHotmart(); }}
