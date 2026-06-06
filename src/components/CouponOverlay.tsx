@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { motion, animate } from 'framer-motion';
 
 interface CouponOverlayProps {
   onClaim: () => void;
@@ -7,6 +8,7 @@ interface CouponOverlayProps {
 export const CouponOverlay: React.FC<CouponOverlayProps> = ({ onClaim }) => {
   const [timeLeft, setTimeLeft] = useState(15 * 60);
   const [revealed, setRevealed] = useState(false);
+  const [boxShadow, setBoxShadow] = useState('0 4px 20px rgba(201,168,76,0.3)');
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isDrawingRef = useRef(false);
   const strokesRef = useRef(0);
@@ -15,6 +17,20 @@ export const CouponOverlay: React.FC<CouponOverlayProps> = ({ onClaim }) => {
     const id = setInterval(() => setTimeLeft(t => Math.max(0, t - 1)), 1000);
     return () => clearInterval(id);
   }, []);
+
+  useEffect(() => {
+    if (!revealed) return;
+    let toggle = false;
+    const id = setInterval(() => {
+      toggle = !toggle;
+      setBoxShadow(
+        toggle
+          ? '0 4px 40px rgba(201,168,76,0.8)'
+          : '0 4px 20px rgba(201,168,76,0.3)'
+      );
+    }, 1800);
+    return () => clearInterval(id);
+  }, [revealed]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -73,28 +89,50 @@ export const CouponOverlay: React.FC<CouponOverlayProps> = ({ onClaim }) => {
     <div
       style={{
         position: 'fixed', inset: 0, zIndex: 1000,
-        background: 'rgba(0,0,0,0.87)',
+        background: 'rgba(0,0,0,0.85)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         padding: '20px',
       }}
     >
       <div
         style={{
-          background: '#1C0D05',
+          background: 'linear-gradient(145deg, #0F0F0F 0%, #1A1A1A 50%, #0F0F0F 100%)',
           borderRadius: '24px',
           padding: '28px 20px',
           maxWidth: '340px',
           width: '100%',
           textAlign: 'center',
-          border: '2px solid #C9A84C',
-          boxShadow: '0 0 50px rgba(201,168,76,0.25)',
+          border: '1px solid rgba(201,168,76,0.5)',
+          boxShadow: '0 0 60px rgba(201,168,76,0.15), inset 0 1px 0 rgba(255,255,255,0.05)',
         }}
       >
-        {/* Timer */}
-        <p style={{ color: '#C9A84C', fontSize: '10px', fontWeight: 800, letterSpacing: '3px', margin: '0 0 4px' }}>
+        {/* Timer header */}
+        <p style={{
+          color: 'rgba(201,168,76,0.7)',
+          fontSize: '10px',
+          fontWeight: 700,
+          letterSpacing: '4px',
+          textTransform: 'uppercase',
+          margin: '0 0 4px',
+        }}>
           OFERTA EXPIRA EN
         </p>
-        <p style={{ color: '#FFD700', fontSize: '42px', fontWeight: 900, fontFamily: 'monospace', margin: '0 0 20px', letterSpacing: '4px' }}>
+
+        {/* Timer digits — metallic gold gradient text */}
+        <p
+          style={{
+            background: 'linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            fontSize: '4rem',
+            fontWeight: 900,
+            fontFamily: 'monospace',
+            letterSpacing: '4px',
+            margin: '0 0 20px',
+            lineHeight: 1,
+          }}
+        >
           {mm}:{ss}
         </p>
 
@@ -102,30 +140,36 @@ export const CouponOverlay: React.FC<CouponOverlayProps> = ({ onClaim }) => {
         <div
           style={{
             display: 'inline-block',
-            background: 'linear-gradient(135deg, #C9A84C 0%, #FFD700 100%)',
-            borderRadius: '100px',
+            background: 'linear-gradient(135deg, #BF953F 0%, #FCF6BA 50%, #AA771C 100%)',
+            borderRadius: '9999px',
             padding: '6px 22px',
             marginBottom: '20px',
           }}
         >
-          <span style={{ color: '#1C0D05', fontSize: '11px', fontWeight: 900, letterSpacing: '2px' }}>
+          <span style={{
+            color: '#1A1A1A',
+            fontSize: '11px',
+            fontWeight: 900,
+            letterSpacing: '3px',
+          }}>
             ★ EXCLUSIVO PARA TI ★
           </span>
         </div>
 
-        {/* Scratch area */}
+        {/* Scratch / reveal area */}
         <div
           style={{
             position: 'relative',
             marginBottom: '22px',
             borderRadius: '16px',
             overflow: 'hidden',
+            background: 'linear-gradient(135deg, #1A1A1A 0%, #242424 100%)',
+            border: '1px solid rgba(201,168,76,0.3)',
           }}
         >
           {/* Content underneath gold layer */}
           <div
             style={{
-              background: '#2D1810',
               padding: '28px 16px',
               display: 'flex',
               flexDirection: 'column',
@@ -133,16 +177,27 @@ export const CouponOverlay: React.FC<CouponOverlayProps> = ({ onClaim }) => {
               gap: '6px',
             }}
           >
-            <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '13px', fontWeight: 600, margin: 0 }}>
+            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', fontWeight: 600, margin: 0 }}>
               Tu descuento especial
             </p>
-            <p style={{ color: '#FFD700', fontSize: '64px', fontWeight: 900, lineHeight: 1, margin: 0 }}>
+            <p
+              style={{
+                background: 'linear-gradient(135deg, #BF953F 0%, #FCF6BA 30%, #B38728 60%, #FBF5B7 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                fontSize: '5rem',
+                fontWeight: 900,
+                lineHeight: 1,
+                margin: 0,
+              }}
+            >
               30%
             </p>
-            <p style={{ color: 'white', fontSize: '20px', fontWeight: 800, letterSpacing: '1px', margin: 0 }}>
+            <p style={{ color: '#C9A84C', fontSize: '20px', fontWeight: 800, letterSpacing: '3px', margin: 0 }}>
               DE DESCUENTO
             </p>
-            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '12px', margin: '6px 0 0' }}>
+            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', margin: '6px 0 0' }}>
               Aplicado automáticamente
             </p>
           </div>
@@ -174,23 +229,42 @@ export const CouponOverlay: React.FC<CouponOverlayProps> = ({ onClaim }) => {
         </div>
 
         {revealed ? (
-          <button
-            onClick={onClaim}
+          /* Layered gold button with pulse animation */
+          <div
             style={{
-              width: '100%',
-              padding: '16px',
-              background: 'linear-gradient(135deg, #C9A84C 0%, #FFD700 100%)',
-              color: '#1C0D05',
-              borderRadius: '100px',
-              fontWeight: 900,
-              fontSize: '16px',
-              border: 'none',
-              cursor: 'pointer',
-              letterSpacing: '0.3px',
+              background: 'linear-gradient(to bottom, #917100, #EAD98F)',
+              borderRadius: '9999px',
+              padding: '1.5px',
             }}
           >
-            ¡Reclamar mi 30% OFF! →
-          </button>
+            <div
+              style={{
+                background: 'linear-gradient(to bottom, #FFFDDD, #856807, #FFF1B3)',
+                borderRadius: '9999px',
+                padding: '2px',
+              }}
+            >
+              <button
+                onClick={onClaim}
+                style={{
+                  width: '100%',
+                  padding: '14px 16px',
+                  background: 'linear-gradient(to bottom, #FFEBA1, #9B873F)',
+                  color: '#3D2B00',
+                  borderRadius: '9999px',
+                  fontWeight: 900,
+                  fontSize: '16px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  letterSpacing: '0.3px',
+                  boxShadow: boxShadow,
+                  transition: 'box-shadow 0.6s ease',
+                }}
+              >
+                ¡Reclamar mi 30% OFF! →
+              </button>
+            </div>
+          </div>
         ) : (
           <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '11px', margin: 0 }}>
             Raspa el área dorada para revelar tu descuento
