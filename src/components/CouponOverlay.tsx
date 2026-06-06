@@ -1,9 +1,21 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, animate } from 'framer-motion';
+import { motion } from 'framer-motion';
+import confetti from 'canvas-confetti';
 
 interface CouponOverlayProps {
   onClaim: () => void;
 }
+
+const PARTICLE_POSITIONS = [
+  { left: '10%', top: '20%' },
+  { left: '85%', top: '15%' },
+  { left: '5%',  top: '60%' },
+  { left: '90%', top: '55%' },
+  { left: '20%', top: '85%' },
+  { left: '75%', top: '80%' },
+  { left: '50%', top: '5%'  },
+  { left: '50%', top: '95%' },
+];
 
 export const CouponOverlay: React.FC<CouponOverlayProps> = ({ onClaim }) => {
   const [timeLeft, setTimeLeft] = useState(15 * 60);
@@ -20,6 +32,19 @@ export const CouponOverlay: React.FC<CouponOverlayProps> = ({ onClaim }) => {
 
   useEffect(() => {
     if (!revealed) return;
+
+    // Confetti explosion
+    confetti({
+      particleCount: 150,
+      spread: 80,
+      origin: { y: 0.6 },
+      colors: ['#BF953F', '#FCF6BA', '#B38728', '#FFF', '#C9A84C'],
+      startVelocity: 45,
+      gravity: 0.8,
+      ticks: 200,
+    });
+
+    // Button pulse
     let toggle = false;
     const id = setInterval(() => {
       toggle = !toggle;
@@ -74,7 +99,7 @@ export const CouponOverlay: React.FC<CouponOverlayProps> = ({ onClaim }) => {
         for (let i = 3; i < data.length; i += 4) {
           if (data[i] < 128) cleared++;
         }
-        if (cleared / (canvas.width * canvas.height) > 0.4) {
+        if (cleared / (canvas.width * canvas.height) > 0.6) {
           setRevealed(true);
         }
       }
@@ -96,6 +121,7 @@ export const CouponOverlay: React.FC<CouponOverlayProps> = ({ onClaim }) => {
     >
       <div
         style={{
+          position: 'relative',
           background: 'linear-gradient(145deg, #0F0F0F 0%, #1A1A1A 50%, #0F0F0F 100%)',
           borderRadius: '24px',
           padding: '28px 20px',
@@ -106,6 +132,26 @@ export const CouponOverlay: React.FC<CouponOverlayProps> = ({ onClaim }) => {
           boxShadow: '0 0 60px rgba(201,168,76,0.15), inset 0 1px 0 rgba(255,255,255,0.05)',
         }}
       >
+        {/* Floating ✨ particles on reveal */}
+        {revealed && PARTICLE_POSITIONS.map((pos, i) => (
+          <motion.span
+            key={i}
+            initial={{ opacity: 0, scale: 0, y: 0 }}
+            animate={{ opacity: [0, 1, 0], scale: [0, 1.2, 0], y: -60 }}
+            transition={{ duration: 1.2, delay: i * 0.1 }}
+            style={{
+              position: 'absolute',
+              left: pos.left,
+              top: pos.top,
+              fontSize: '20px',
+              pointerEvents: 'none',
+              zIndex: 10,
+            }}
+          >
+            ✨
+          </motion.span>
+        ))}
+
         {/* Timer header */}
         <p style={{
           color: 'rgba(201,168,76,0.7)',
@@ -180,7 +226,32 @@ export const CouponOverlay: React.FC<CouponOverlayProps> = ({ onClaim }) => {
             <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', fontWeight: 600, margin: 0 }}>
               Tu descuento especial
             </p>
-            <p
+
+            {/* 30% — spring entry + glow pulse */}
+            <motion.p
+              initial={{ scale: 0, rotate: -15, opacity: 0 }}
+              animate={revealed
+                ? {
+                    scale: 1,
+                    rotate: 0,
+                    opacity: 1,
+                    textShadow: [
+                      '0 0 20px rgba(201,168,76,0.4)',
+                      '0 0 60px rgba(201,168,76,0.9)',
+                      '0 0 20px rgba(201,168,76,0.4)',
+                    ],
+                  }
+                : { scale: 1, rotate: 0, opacity: 1 }
+              }
+              transition={revealed
+                ? {
+                    scale: { type: 'spring', stiffness: 300, damping: 15 },
+                    rotate: { type: 'spring', stiffness: 300, damping: 15 },
+                    opacity: { duration: 0.3 },
+                    textShadow: { duration: 1.5, repeat: Infinity, delay: 0.5 },
+                  }
+                : { duration: 0 }
+              }
               style={{
                 background: 'linear-gradient(135deg, #BF953F 0%, #FCF6BA 30%, #B38728 60%, #FBF5B7 100%)',
                 WebkitBackgroundClip: 'text',
@@ -193,7 +264,8 @@ export const CouponOverlay: React.FC<CouponOverlayProps> = ({ onClaim }) => {
               }}
             >
               30%
-            </p>
+            </motion.p>
+
             <p style={{ color: '#C9A84C', fontSize: '20px', fontWeight: 800, letterSpacing: '3px', margin: 0 }}>
               DE DESCUENTO
             </p>
