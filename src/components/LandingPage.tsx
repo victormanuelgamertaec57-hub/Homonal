@@ -306,7 +306,7 @@ export const LandingPage: React.FC = () => {
             </FadeUp>
 
             <ShimmerButton
-              onClick={() => { trackEvent('AddToCart', { content_name: 'El Método Hormonal', value: 16.99, currency: 'USD' }); irAHotmart(); }}
+              onClick={() => { trackEvent('AddToCart', { content_name: 'El Método Hormonal', value: 16.99, currency: 'USD' }); trackEvent('InitiateCheckout', { value: 16.99, currency: 'USD' }); irAHotmart(); }}
               className="w-full py-4 rounded-full bg-[#2C1810] text-white font-black text-lg mb-3 active:scale-95 transition-transform"
             >
               Obtener mi plan con 30% OFF →
@@ -763,7 +763,7 @@ export const LandingPage: React.FC = () => {
               ✅ PRECIO DE LANZAMIENTO BETA
             </p>
             <ShimmerButton
-              onClick={() => { trackEvent('AddToCart', { content_name: 'El Método Hormonal', value: 16.99, currency: 'USD' }); irAHotmart(); }}
+              onClick={() => { trackEvent('AddToCart', { content_name: 'El Método Hormonal', value: 16.99, currency: 'USD' }); trackEvent('InitiateCheckout', { value: 16.99, currency: 'USD' }); irAHotmart(); }}
               className="w-full py-4 rounded-full bg-white text-[#2C1810] font-black text-lg hover:bg-gray-100 active:scale-95 transition-all"
             >
               Obtener mi plan con 30% OFF →
